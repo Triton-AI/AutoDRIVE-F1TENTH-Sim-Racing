@@ -118,7 +118,7 @@ def create_point_msg(p, position):
 def create_imu_msg(imu, orientation_quaternion, angular_velocity, linear_acceleration):
     imu.header = Header()
     imu.header.stamp = autodrive_bridge.get_clock().now().to_msg()
-    imu.header.frame_id = 'imu'
+    imu.header.frame_id = 'ego_racecar/imu_link'
     imu.orientation.x = orientation_quaternion[0]
     imu.orientation.y = orientation_quaternion[1]
     imu.orientation.z = orientation_quaternion[2]
@@ -137,7 +137,7 @@ def create_imu_msg(imu, orientation_quaternion, angular_velocity, linear_acceler
 def create_laserscan_msg(ls, lidar_scan_rate, lidar_range_array, lidar_intensity_array):
     ls.header = Header()
     ls.header.stamp = autodrive_bridge.get_clock().now().to_msg()
-    ls.header.frame_id = 'lidar'
+    ls.header.frame_id = 'ego_racecar/lidar_link'
     ls.angle_min = -2.35619 # Minimum angle of laser scan (0 degrees)
     ls.angle_max = 2.35619 # Maximum angle of laser scan (270 degrees)
     ls.angle_increment = 0.004363323 # Angular resolution of laser scan (0.25 degree)
@@ -195,8 +195,8 @@ def publish_speed_data(speed):
     publishers['pub_speed'].publish(create_float_msg(msg_float32, speed))
 
 def publish_encoder_data(encoder_angles):
-    publishers['pub_left_encoder'].publish(create_joint_state_msg(msg_jointstate, encoder_angles[0], "left_encoder", "left_encoder"))
-    publishers['pub_right_encoder'].publish(create_joint_state_msg(msg_jointstate, encoder_angles[1], "right_encoder", "right_encoder"))
+    publishers['pub_left_encoder'].publish(create_joint_state_msg(msg_jointstate, encoder_angles[0], "wheel_RL_joint", "ego_racecar/wheel_RL"))
+    publishers['pub_right_encoder'].publish(create_joint_state_msg(msg_jointstate, encoder_angles[1], "wheel_RR_joint", "ego_racecar/wheel_RR"))
 
 def publish_ips_data(position):
     publishers['pub_ips'].publish(create_point_msg(msg_point, position))
@@ -208,7 +208,7 @@ def publish_lidar_scan(lidar_scan_rate, lidar_range_array, lidar_intensity_array
     publishers['pub_lidar'].publish(create_laserscan_msg(msg_laserscan, lidar_scan_rate, lidar_range_array.tolist(), lidar_intensity_array.tolist()))
 
 def publish_camera_images(front_camera_image):
-    publishers['pub_front_camera'].publish(create_image_msg(front_camera_image, "front_camera"))
+    publishers['pub_front_camera'].publish(create_image_msg(front_camera_image, "ego_racecar/camera_link"))
 
 def publish_lap_count_data(lap_count):
     publishers['pub_lap_count'].publish(create_int_msg(msg_int32, lap_count))
